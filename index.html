@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8" />
+
+        <title>Bombble</title>
+
+        <style>
+            h1 {
+                position: absolute !important;
+                clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
+                clip: rect(1px, 1px, 1px, 1px);
+            }
+
+            canvas {
+                display: block;
+                margin: 20px auto;
+                border: 1px solid rgba( 0, 50, 100, 0.4 );
+                box-shadow: 0 0 20px 0 rgba( 0, 0, 0, 0.4 );
+            }
+
+            ::selection {
+                background: transparent;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Bombble</h1>
+
+        <canvas id="game" width="320" height="568"></canvas>
+
+        <script src="bin/app.min.js"></script>
+    </body>
+</html>

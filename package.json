@@ -1,0 +1,21 @@
+{
+  "name": "meet-canvas-animation",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Base exercise to discover animation with <canvas>.",
+  "author": "Pierre-Antoine \"leny\" Delnatte <info@flatland.be>",
+  "devDependencies": {
+    "babel-plugin-iife-wrap": "^1.1.0",
+    "babel-preset-es2015": "^6.22.0",
+    "babel-preset-es2016": "^6.22.0",
+    "gulp": "^3.9.1",
+    "gulp-add-src": "^0.2.0",
+    "gulp-babel": "^6.1.2",
+    "gulp-concat": "^2.6.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-sourcemaps": "^2.4.1"
+  },
+  "dependencies": {
+    "axios": "^0.16.1"
+  }
+}
