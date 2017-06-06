@@ -29,13 +29,23 @@ class Bombble {
         this.reset();
 
         this.canvas.addEventListener( "click", this.handleAction.bind( this ) );
+        this.canvas.addEventListener( "mousedown", this.handleAction.bind( this ) );
+        this.canvas.addEventListener( "mouseup", this.handleAction.bind( this ) );
+        this.canvas.addEventListener( "mousemove", this.handleAction.bind( this ) );
 
         this.animate();
     }
 
     reset() {
+        // init game-related properties
+        this.started = false;
+        this.ended = false;
+        this.score = 0;
+        this.nbArrows = 1 + Math.floor( this.score / 2 );
+        this.nbBombs = Math.floor( this.score / 3 );
+
         let { width, height } = this,
-        nbClouds = 1 + Math.floor( Math.random() * 6 );
+            nbClouds = 1 + Math.floor( Math.random() * 6 );
 
         this.background = new Background( width, height );
         this.clouds = [];
@@ -43,13 +53,16 @@ class Bombble {
             this.clouds.push( new Cloud( width, height ) );
         }
         this.starting = new Starting( width, height );
-        this.bubble = new Bubble( width, height );
-        this.gameOver = new GameOver( width, height );
 
-        // init game-related properties
-        this.started = false;
-        this.ended = false;
-        this.score = 0;
+        this.bubble = new Bubble( width, height );
+        this.arrows = [];
+        for(var i = 0; i < this.nbArrows; i++) {
+            this.arrows.push( new Arrow( width, height ) );
+        }
+        this.bombs = [];
+
+        this.gameOver = new GameOver( width, height );
+        
     }
 
     animate() {
@@ -57,11 +70,13 @@ class Bombble {
 
         // check game state
         if ( this.started ) {
-            //this.checkState();
+            this.checkState();
         }
         // update elements
         if ( this.started ) {
-
+            if ( this.arrows ) {
+                this.arrows.forEach( ( oArrow ) => oArrow.update( this ) );
+            }
         }
         // draw
         this.context.clearRect( 0, 0, this.width, this.height );
@@ -69,6 +84,9 @@ class Bombble {
         this.clouds.forEach( ( oCloud ) => oCloud.draw( this ) );
         if ( this.started ) {
             this.bubble.draw( this );
+            if ( this.arrows ) {
+                this.arrows.forEach( ( oArrow ) => oArrow.draw( this ) );
+            }
             if ( this.ended ) {
                 this.gameOver.draw( this );
             }
@@ -78,22 +96,47 @@ class Bombble {
     }
 
     handleAction( oEvent ) {
-        if ( this.started ) {
-            //this.bird.handleAction();
-        } else {
-            this.started = true;
-        }
+        let { width, height } = this;
+        if ( oEvent.type === "mousemove" ) {
+            //&&& Drag & Drop des bombes
+        } else if ( oEvent.type === "click" ) {
+            if ( this.started ) {
+                    console.log( "this.arrows before : " );
+                    console.log( this.arrows );
+                this.arrows.forEach( ( oArrow, iIndex ) => {
+                    if( oArrow.handleAction( this, oEvent ) ) { 
+                        console.log( "this.arrows after : " );
+                        this.arrows[ iIndex ] = null;
+                        delete this.arrows[ iIndex ];
+                        this.arrows.slice( iIndex, 1 );
+                        console.log( this.arrows );
+                    } 
+                }, this );
+                while( this.nbArrows < 1 + Math.floor( this.score / 2 ) ) {
+                    this.arrows.push( new Arrow( width, height ) );
+                    this.nbArrows++;
+                }
+            } else {
+                this.started = true;
+            }
 
-        if ( this.ended ) {
-            if ( window.confirm( "Voulez-vous rejouer ?" ) ) {
-                this.reset();
-                this.animate();
+            if ( this.ended ) {
+                if ( window.confirm( "Voulez-vous rejouer ?" ) ) {
+                    this.reset();
+                    this.animate();
+                }
             }
         }
     }
 
     checkState() {
-        // Collisions
+        let { width, height } = this;
+        
+        //&&& Collisions
+
+        //&&& Score
+
+            //&&& Création de flèches/bombes (quand le score change)
     }
 
     over() {
