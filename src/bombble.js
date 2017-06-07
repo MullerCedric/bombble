@@ -41,7 +41,7 @@ class Bombble {
         this.started = false;
         this.ended = false;
         this.score = 0;
-        this.nbArrows = 1 + Math.floor( this.score / 2 );
+        this.nbArrows = 2;
         this.nbBombs = Math.floor( this.score / 3 );
 
         let { width, height } = this,
@@ -74,9 +74,7 @@ class Bombble {
         }
         // update elements
         if ( this.started ) {
-            if ( this.arrows ) {
-                this.arrows.forEach( ( oArrow ) => oArrow.update( this ) );
-            }
+            this.arrows.forEach( ( oArrow ) => oArrow.update( this ), this );
         }
         // draw
         this.context.clearRect( 0, 0, this.width, this.height );
@@ -84,9 +82,7 @@ class Bombble {
         this.clouds.forEach( ( oCloud ) => oCloud.draw( this ) );
         if ( this.started ) {
             this.bubble.draw( this );
-            if ( this.arrows ) {
-                this.arrows.forEach( ( oArrow ) => oArrow.draw( this ) );
-            }
+            this.arrows.forEach( ( oArrow ) => oArrow.draw( this ), this );
             if ( this.ended ) {
                 this.gameOver.draw( this );
             }
@@ -101,18 +97,14 @@ class Bombble {
             //&&& Drag & Drop des bombes
         } else if ( oEvent.type === "click" ) {
             if ( this.started ) {
-                    console.log( "this.arrows before : " );
-                    console.log( this.arrows );
                 this.arrows.forEach( ( oArrow, iIndex ) => {
-                    if( oArrow.handleAction( this, oEvent ) ) { 
-                        console.log( "this.arrows after : " );
+                    if( oArrow.handleAction( this, oEvent ) ) {
                         this.arrows[ iIndex ] = null;
-                        delete this.arrows[ iIndex ];
-                        this.arrows.slice( iIndex, 1 );
-                        console.log( this.arrows );
+                        this.arrows.splice( iIndex, 1 );
                     } 
                 }, this );
-                while( this.nbArrows < 1 + Math.floor( this.score / 2 ) ) {
+                console.log( this.arrows );
+                while( this.nbArrows < 2 + Math.floor( this.score / 14 ) ) {
                     this.arrows.push( new Arrow( width, height ) );
                     this.nbArrows++;
                 }
