@@ -8,6 +8,19 @@
 
  class Arrow {
     constructor( width, height ) {
+        let dx = Math.random() * width,
+            dy = Math.random() * height;
+        if ( dx > width / 1.5 ) {
+            dx += ( width / 1.5 );
+        } else {
+            dx -= ( width / 1.5 );
+        }
+        if ( dy > height / 1.5 ) {
+            dy += ( height / 1.5 );
+        } else {
+            dy -= ( height / 1.5 );
+        }
+
         this.width = width;
         this.height = height;
 
@@ -16,13 +29,13 @@
             "sy": 59,
             "sw": 52,
             "sh": 20,
-            "dx": Math.floor( Math.random() * width ),
-            "dy": Math.floor( Math.random() * height ),
+            "dx": dx,
+            "dy": dy,
             "dw": 52,
             "dh": 20,
         };
 
-        this.speed = 0.8;
+        this.speed = 0.4;
         this.speedX = this.speed * ( ( ( this.width / 2 ) - this.frame.dx ) / 100 );
         this.speedY = this.speed * ( ( ( this.height / 2 ) - this.frame.dy ) / 100 );
         //this.rotate = Math.atan( ( height / 2 - this.frame.dy ) / ( width / 2 - this.frame.dx ) ); atan was only working when dx > width/2
@@ -33,7 +46,7 @@
     	let { sx, sy, sw, sh, dx, dy, dw, dh } = this.frame;
 
         game.context.fillStyle = "yellow";
-        game.context.fillRect( dx, dy, dw, dh );
+        game.context.fillRect( dx, dy, dw, dw );
     	game.context.save();
         // game.context.translate( dx, dy );
         game.context.translate( ( dx + ( dw / 2 ) ), ( dy + ( dh / 2 ) ) );
@@ -61,10 +74,12 @@
     }
 
     handleAction( game, oEvent ) {
-    	if ( ( oEvent.pageX - game.canvas.offsetLeft ) > this.frame.dx && ( oEvent.pageX - game.canvas.offsetLeft ) < this.frame.dx + this.frame.dw ) {
-            if ( ( oEvent.pageY - game.canvas.offsetTop ) > this.frame.dy && ( oEvent.pageY - game.canvas.offsetTop ) < this.frame.dy + this.frame.dh ) {
+        let { pageX, pageY } = oEvent,
+            { offsetLeft, offsetTop } = game.canvas,
+            { dx, dy, dw } = this.frame;
+    	if ( ( pageX - offsetLeft ) > dx && ( pageX - offsetLeft ) < dx + dw ) {
+            if ( ( pageY - offsetTop ) > dy && ( pageY - offsetTop ) < dy + dw ) {
                 game.score++;
-
                 game.nbArrows--;
 
                 return true;

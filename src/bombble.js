@@ -41,8 +41,8 @@ class Bombble {
         this.started = false;
         this.ended = false;
         this.score = 0;
-        this.nbArrows = 2;
-        this.nbBombs = Math.floor( this.score / 3 );
+        this.nbArrows = 3;
+        this.nbBombs = 1;
 
         let { width, height } = this,
             nbClouds = 1 + Math.floor( Math.random() * 6 );
@@ -60,6 +60,9 @@ class Bombble {
             this.arrows.push( new Arrow( width, height ) );
         }
         this.bombs = [];
+        for(var i = 0; i < this.nbBombs; i++) {
+            this.bombs.push( new Bomb( width, height ) );
+        }
 
         this.gameOver = new GameOver( width, height );
         
@@ -75,6 +78,7 @@ class Bombble {
         // update elements
         if ( this.started ) {
             this.arrows.forEach( ( oArrow ) => oArrow.update( this ), this );
+            this.bombs.forEach( ( oBomb ) => oBomb.update( this ), this );
         }
         // draw
         this.context.clearRect( 0, 0, this.width, this.height );
@@ -83,6 +87,7 @@ class Bombble {
         if ( this.started ) {
             this.bubble.draw( this );
             this.arrows.forEach( ( oArrow ) => oArrow.draw( this ), this );
+            this.bombs.forEach( ( oBomb ) => oBomb.draw( this ), this );
             if ( this.ended ) {
                 this.gameOver.draw( this );
             }
@@ -93,20 +98,34 @@ class Bombble {
 
     handleAction( oEvent ) {
         let { width, height } = this;
-        if ( oEvent.type === "mousemove" ) {
-            //&&& Drag & Drop des bombes
+        if ( oEvent.type === "mousedown" ) {
+            //&&& Bombs Drag & Drop
+            this.bombs.forEach( ( oBomb ) => oBomb.mouseDown( this, oEvent ), this );
+        } else if ( oEvent.type === "mousemove" ) {
+            //&&& Bombs Drag & Drop
+            this.bombs.forEach( ( oBomb ) => oBomb.mouseMove( this, oEvent ), this );
+        } else if ( oEvent.type === "mouseup" ) {
+            //&&& Bombs Drag & Drop
+            this.bombs.forEach( ( oBomb ) => oBomb.mouseUp( this, oEvent ), this );
         } else if ( oEvent.type === "click" ) {
             if ( this.started ) {
                 this.arrows.forEach( ( oArrow, iIndex ) => {
+
+                    //Deleting the arrow if it is clicked, and adding score
                     if( oArrow.handleAction( this, oEvent ) ) {
                         this.arrows[ iIndex ] = null;
                         this.arrows.splice( iIndex, 1 );
-                    } 
+                    }
                 }, this );
-                console.log( this.arrows );
-                while( this.nbArrows < 2 + Math.floor( this.score / 14 ) ) {
+
+                //When there is a click on a started game, we check if it is necessery to add new arrows/bombs (depending on the score)
+                while( this.nbArrows < 3 + Math.floor( this.score / 20 ) ) {
                     this.arrows.push( new Arrow( width, height ) );
                     this.nbArrows++;
+                }
+                while( this.nbBombs < 1 + Math.floor( this.score / 20 ) ) {
+                    this.bombs.push( new Bomb( width, height ) );
+                    this.nbBombs++;
                 }
             } else {
                 this.started = true;
@@ -122,16 +141,21 @@ class Bombble {
     }
 
     checkState() {
-        let { width, height } = this;
         
-        //&&& Collisions
+        this.bombs.forEach( ( oBomb, iIndex ) => {
 
-        //&&& Score
+            if( oBomb.hasBlownUp ) {
+                this.bombs[ iIndex ] = null;
+                this.bombs.splice( iIndex, 1 );
+                game.nbBombs--;
+            }
 
-            //&&& Création de flèches/bombes (quand le score change)
+        }, this );
+
     }
 
     over() {
+        alert( "PERDU !!!!" );
         this.ended = true;
 
         window.cancelAnimationFrame( this.animationRequestId );
