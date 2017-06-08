@@ -38,8 +38,6 @@ class GameOver {
     draw( game ) {
         game.drawSpriteFromFrames( this.frames.panel );
         game.drawSpriteFromFrames( this.frames.button );
-
-        console.log( game.score );
         game.score.draw( game, "left", ( this.width / 2 ) - 23, ( this.height / 2 ) -3 );
     }
 }

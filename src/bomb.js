@@ -6,7 +6,7 @@
  * started at 05/06/2017
  */
 
-class Bomb { //&&& Code Arrows à modifier
+class Bomb {
     constructor( width, height ) {
         this.width = width;
         this.height = height;
@@ -70,7 +70,11 @@ class Bomb { //&&& Code Arrows à modifier
             "dh": this.frames[ this.animation.current ].sh,
         };
 
-        this.dragged = false; // The bomb has been dragged and therfore doesn't move anymore
+        this.center = {
+            "x": this.destinationFrame.dx + this.destinationFrame.dw / 2,
+            "y": this.destinationFrame.dy + this.destinationFrame.dh / 2,
+        }
+        this.dragged = false; // The bomb has been dragged and therefore doesn't move anymore
         this.focused = false; // The bomb is being dragged
 
         this.speed = {
@@ -81,7 +85,6 @@ class Bomb { //&&& Code Arrows à modifier
         }
         this.speed.x *= this.speed.base;
         this.speed.y *= this.speed.base;
-        //this.speed.both = Math.sqrt( Math.pow( this.speed.x, 2 ) + Math.pow( this.speed.y, 2 ) );
         this.speed.both = this.getHypotenuseLength( this.speed.x, this.speed.y );
 
         this.currentAnimFrame = 0;
@@ -100,12 +103,10 @@ class Bomb { //&&& Code Arrows à modifier
     }
 
     isTouching( objRadius, objCenterX, objCenterY ) {
-        let /*{ dx, dy, dw, dh } = this.destinationFrame,
-            */distX, distY, R1, R2, squaredist;
-
-        distX = this.destinationFrame.dx + ( this.destinationFrame.dw / 2 ) - objCenterX;
-        distY = this.destinationFrame.dy + ( this.destinationFrame.dh / 2 ) - objCenterY;
-        squaredist = Math.pow( distX , 2 ) + Math.pow( distY, 2 );
+        let distX, distY, R1, R2, squaredist;
+        distX = this.center.x - objCenterX;
+        distY = this.center.y - objCenterY;
+        squaredist = Math.pow( distX, 2 ) + Math.pow( distY, 2 );
         R1 = this.destinationFrame.dw / 2;
         R2 = objRadius;
 
@@ -115,10 +116,10 @@ class Bomb { //&&& Code Arrows à modifier
     draw( game ) {
         let { sx, sy, sw, sh } = this.frames[ this.animation.current ],
             { dx, dy, dw, dh } = this.destinationFrame;
-        game.drawSpriteFromFrames( { sx, sy, sw, sh, dx, dy, dw, dh } ); //&&& destination frame, the one from the animation
+        game.drawSpriteFromFrames( { sx, sy, sw, sh, dx, dy, dw, dh } );
     }
 
-    update( game ) { //&&& ajouter destructuring
+    update( game ) {
         let delay = 95;
         /* Animation */
         this.currentAnimFrame++;
@@ -131,6 +132,8 @@ class Bomb { //&&& Code Arrows à modifier
         }
 
         /* Explosion */
+        this.center.x = this.destinationFrame.dx + this.destinationFrame.dw / 2;
+        this.center.y = this.destinationFrame.dy + this.destinationFrame.dh / 2;
         if ( this.animation.current === this.animation.max -1 ) {
             if (!this.hasBlownUp ) {
                 if ( this.isTouching( game.bubble.frame.dh / 2, game.bubble.frame.dx + game.bubble.frame.dw / 2, game.bubble.frame.dy + game.bubble.frame.dh / 2 ) ) {
@@ -145,9 +148,10 @@ class Bomb { //&&& Code Arrows à modifier
         }
 
         /* Movement */
-        if ( this.destinationFrame.dx > this.width / 2 - 38 / 2 && this.destinationFrame.dx < this.width / 2 + 38 / 2 ) {
-            if ( this.destinationFrame.dy > this.height / 2 - 38 / 2 && this.destinationFrame.dy < this.height / 2 + 3 / 2 ) {
+        if ( this.center.x > this.width / 2 - 38 / 2 && this.center.x < this.width / 2 + 38 / 2 ) {
+            if ( this.center.y > this.height / 2 - 38 / 2 && this.center.y < this.height / 2 + 3 / 2 ) {
                 return;
+                //The bomb will stop moving if its center enters a 38px wide square zone in the center of the canvas
             }
         }
         if ( this.dragged ) return;
@@ -158,6 +162,7 @@ class Bomb { //&&& Code Arrows à modifier
     mouseDown( game, oEvent ) {
         let { pageX, pageY } = oEvent,
             { offsetLeft, offsetTop } = game.canvas;
+        if ( this.animation.current === this.animation.max - 1 ) return;
 
         if ( ( pageX - offsetLeft ) > this.destinationFrame.dx && ( pageX - offsetLeft ) < this.destinationFrame.dx + this.destinationFrame.dw ) {
             if ( ( pageY - offsetTop ) > this.destinationFrame.dy && ( pageY - offsetTop ) < this.destinationFrame.dy + this.destinationFrame.dw ) {
@@ -173,6 +178,7 @@ class Bomb { //&&& Code Arrows à modifier
     mouseMove( game, oEvent ) {
         let { pageX, pageY } = oEvent,
             { offsetLeft, offsetTop } = game.canvas;
+        if ( this.animation.current === this.animation.max - 1 ) return;
 
         if ( this.focused ) {
             this.destinationFrame.dx = pageX - offsetLeft;

@@ -102,13 +102,10 @@ class Bombble {
     handleAction( oEvent ) {
         let { width, height } = this;
         if ( oEvent.type === "mousedown" ) {
-            //&&& Bombs Drag & Drop
             this.bombs.forEach( ( oBomb ) => oBomb.mouseDown( this, oEvent ), this );
         } else if ( oEvent.type === "mousemove" ) {
-            //&&& Bombs Drag & Drop
             this.bombs.forEach( ( oBomb ) => oBomb.mouseMove( this, oEvent ), this );
         } else if ( oEvent.type === "mouseup" ) {
-            //&&& Bombs Drag & Drop
             this.bombs.forEach( ( oBomb ) => oBomb.mouseUp( this, oEvent ), this );
         } else if ( oEvent.type === "click" ) {
             if ( this.started ) {
@@ -160,11 +157,8 @@ class Bombble {
     }
 
     over() {
-        alert( "PERDU !!!!" );
         this.ended = true;
-
         window.cancelAnimationFrame( this.animationRequestId );
-        
     }
 
     drawSpriteFromFrames( { sx, sy, sw, sh, dx, dy, dw, dh } ) {

@@ -28,15 +28,12 @@
     }
 
     draw( game, align, dx, dy ) {
-    	//&&& Gérer alignement
-    	if ( game.ended ) console.log( "Jeu fini ! : " + align + dx + dy  );
         let aScoreParts = game.iScore.toString().split( "" ),
             { sx, sy, sw, sh } = this.frames;
-
+        if (align === "right" ) aScoreParts.reverse();
         aScoreParts.forEach( ( sScorePart, iIndex ) => {
         	if( align === "right" ) {
         		dx -= ( this.frames.sw + 2 );
-        		aScoreParts.reverse();
         	} else {
         		dx += ( this.frames.sw + 2 );
         	}
