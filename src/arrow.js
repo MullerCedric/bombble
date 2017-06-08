@@ -79,9 +79,6 @@
             { dx, dy, dw } = this.frame;
     	if ( ( pageX - offsetLeft ) > dx && ( pageX - offsetLeft ) < dx + dw ) {
             if ( ( pageY - offsetTop ) > dy && ( pageY - offsetTop ) < dy + dw ) {
-                game.score++;
-                game.nbArrows--;
-
                 return true;
             } else {
                 return false;

@@ -40,7 +40,7 @@ class Bombble {
         // init game-related properties
         this.started = false;
         this.ended = false;
-        this.score = 0;
+        this.iScore = 0;
         this.nbArrows = 3;
         this.nbBombs = 1;
 
@@ -63,6 +63,7 @@ class Bombble {
         for(var i = 0; i < this.nbBombs; i++) {
             this.bombs.push( new Bomb( width, height ) );
         }
+        this.score = new Score( width, height );
 
         this.gameOver = new GameOver( width, height );
         
@@ -90,6 +91,8 @@ class Bombble {
             this.bombs.forEach( ( oBomb ) => oBomb.draw( this ), this );
             if ( this.ended ) {
                 this.gameOver.draw( this );
+            } else {
+                this.score.draw( this, "right", this.width - 5, 25 );
             }
         } else {
             this.starting.draw( this );
@@ -115,15 +118,17 @@ class Bombble {
                     if( oArrow.handleAction( this, oEvent ) ) {
                         this.arrows[ iIndex ] = null;
                         this.arrows.splice( iIndex, 1 );
+                        this.iScore++;
+                        this.nbArrows--;
                     }
                 }, this );
 
                 //When there is a click on a started game, we check if it is necessery to add new arrows/bombs (depending on the score)
-                while( this.nbArrows < 3 + Math.floor( this.score / 20 ) ) {
+                while( this.nbArrows < 3 + Math.floor( this.iScore / 20 ) ) {
                     this.arrows.push( new Arrow( width, height ) );
                     this.nbArrows++;
                 }
-                while( this.nbBombs < 1 + Math.floor( this.score / 20 ) ) {
+                while( this.nbBombs < 1 + Math.floor( this.iScore / 20 ) ) {
                     this.bombs.push( new Bomb( width, height ) );
                     this.nbBombs++;
                 }
@@ -147,7 +152,7 @@ class Bombble {
             if( oBomb.hasBlownUp ) {
                 this.bombs[ iIndex ] = null;
                 this.bombs.splice( iIndex, 1 );
-                game.nbBombs--;
+                this.nbBombs--;
             }
 
         }, this );
